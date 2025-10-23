@@ -1,0 +1,43 @@
+# Node modules
+node_modules/
+
+# Environment variables
+.env
+
+# Firebase credentials
+backend/firebase-service-account.json
+
+# System files
+.DS_Store
+Thumbs.db
+
+# VS Code
+.vscode/launch.json
+
+# Logs
+*.log
+npm-debug.log*
+
+# Build outputs
+dist/
+build/
+
+# Temporary files
+*.tmp
+*.temp
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# IDE
+.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
+._*
+.Spotlight-V100
+.Trashes
