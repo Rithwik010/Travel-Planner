@@ -81,10 +81,8 @@ app.post('/api/generate-itinerary', async (req, res) => {
     console.log('🤖 Generating itinerary using Gemini AI...');
     
     // Initialize Google Generative AI client
-        const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
+    const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
     const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
-    
-    const result = await model.generateContent(prompt);
     
     // Get budget info
     const { budget } = req.body;
