@@ -1,0 +1,1209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Dashboard - Travel Itinerary Planner</title>
+  
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding-bottom: 40px;
+    }
+
+    /* Navbar */
+    .navbar {
+      background: white;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      padding: 15px 0;
+    }
+
+    .navbar-brand {
+      font-family: 'Playfair Display', serif;
+      color: #667eea !important;
+      font-weight: 700;
+      font-size: 1.5rem;
+    }
+
+    .navbar-brand i {
+      margin-right: 8px;
+    }
+
+    .user-avatar {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      border: 2px solid #667eea;
+      object-fit: cover;
+      transition: all 0.3s ease;
+    }
+
+    .user-avatar:hover {
+      transform: scale(1.05);
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+    }
+
+    body.dark-mode .user-avatar {
+      border-color: #9ca3ff;
+    }
+
+    .dropdown-menu {
+      min-width: 200px;
+    }
+
+    /* Dashboard Container */
+    .dashboard-container {
+      max-width: 1200px;
+      margin: 40px auto;
+      padding: 0 20px;
+    }
+
+    .dashboard-header {
+      background: white;
+      border-radius: 20px;
+      padding: 40px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+      margin-bottom: 30px;
+    }
+
+    .dashboard-header h1 {
+      color: #667eea;
+      font-family: 'Playfair Display', serif;
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+    }
+
+    .dashboard-header p {
+      color: #6c757d;
+      font-size: 1.1rem;
+    }
+
+    /* Stats Cards */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+
+    .stat-card {
+      background: white;
+      border-radius: 20px;
+      padding: 30px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s ease;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 50px rgba(0, 0, 0, 0.15);
+    }
+
+    .stat-icon {
+      font-size: 3rem;
+      margin-bottom: 15px;
+    }
+
+    .stat-card.searches .stat-icon { color: #667eea; }
+    .stat-card.itineraries .stat-icon { color: #f093fb; }
+    .stat-card.saved .stat-icon { color: #764ba2; }
+
+    .stat-value {
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: #2d3748;
+      margin-bottom: 5px;
+    }
+
+    .stat-label {
+      color: #6c757d;
+      font-size: 1rem;
+    }
+
+    /* Content Sections */
+    .content-section {
+      background: white;
+      border-radius: 20px;
+      padding: 30px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+      margin-bottom: 30px;
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 25px;
+      padding-bottom: 15px;
+      border-bottom: 2px solid #e2e8f0;
+    }
+
+    .section-header h2 {
+      color: #667eea;
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin: 0;
+    }
+
+    .btn-view-all {
+      color: #667eea;
+      text-decoration: none;
+      font-weight: 500;
+      transition: color 0.3s ease;
+    }
+
+    .btn-view-all:hover {
+      color: #764ba2;
+    }
+
+    /* Trip Cards */
+    .trip-card {
+      border: 2px solid #e2e8f0;
+      border-radius: 15px;
+      padding: 20px;
+      margin-bottom: 15px;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+
+    .trip-card:hover {
+      border-color: #667eea;
+      box-shadow: 0 5px 20px rgba(102, 126, 234, 0.2);
+    }
+
+    .trip-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      margin-bottom: 15px;
+    }
+
+    .trip-destination {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: #2d3748;
+      margin-bottom: 5px;
+    }
+
+    .trip-date {
+      color: #6c757d;
+      font-size: 0.9rem;
+    }
+
+    .trip-badges {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+    }
+
+    .badge-custom {
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 500;
+    }
+
+    .badge-interest {
+      background: #f8f9ff;
+      color: #667eea;
+    }
+
+    .badge-companion {
+      background: #fff5f8;
+      color: #f093fb;
+    }
+
+    .badge-budget {
+      background: #f0fdf4;
+      color: #22c55e;
+    }
+
+    .trip-actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    .btn-action {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 10px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .btn-view {
+      background: #667eea;
+      color: white;
+    }
+
+    .btn-view:hover {
+      background: #764ba2;
+    }
+
+    .btn-delete {
+      background: #fee;
+      color: #dc3545;
+    }
+
+    .btn-delete:hover {
+      background: #dc3545;
+      color: white;
+    }
+
+    .btn-rate {
+      background: #fff3cd;
+      color: #856404;
+    }
+
+    .btn-rate:hover {
+      background: #ffc107;
+      color: #000;
+    }
+
+    .btn-save {
+      background: #ffe0f0;
+      color: #e91e63;
+    }
+
+    .btn-save:hover {
+      background: #e91e63;
+      color: white;
+    }
+
+    .btn-unsave {
+      background: #fff0e6;
+      color: #ff6b35;
+    }
+
+    .btn-unsave:hover {
+      background: #ff6b35;
+      color: white;
+    }
+
+    /* Empty State */
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+    }
+
+    .empty-state i {
+      font-size: 4rem;
+      color: #cbd5e0;
+      margin-bottom: 20px;
+    }
+
+    .empty-state h3 {
+      color: #6c757d;
+      margin-bottom: 10px;
+    }
+
+    .empty-state p {
+      color: #a0aec0;
+      margin-bottom: 20px;
+    }
+
+    .btn-primary-custom {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border: none;
+      color: white;
+      padding: 12px 30px;
+      border-radius: 25px;
+      font-weight: 600;
+      text-decoration: none;
+      display: inline-block;
+      transition: all 0.3s ease;
+    }
+
+    .btn-primary-custom:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+      color: white;
+    }
+
+    /* Loading */
+    .loading-container {
+      text-align: center;
+      padding: 40px;
+    }
+
+    .spinner-border {
+      color: #667eea;
+    }
+
+    /* Logout Button */
+    .btn-logout {
+      background: #fee;
+      color: #dc3545;
+      border: none;
+      padding: 10px 25px;
+      border-radius: 25px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+
+    .btn-logout:hover {
+      background: #dc3545;
+      color: white;
+    }
+
+    /* Rating Stars */
+    .rating-stars {
+      color: #ffc107;
+      font-size: 0.9rem;
+    }
+
+    /* Theme Toggle Styles */
+    .theme-toggle {
+      width: 60px;
+      height: 30px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-radius: 50px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+      display: flex;
+      align-items: center;
+      padding: 3px;
+    }
+
+    .theme-toggle:hover {
+      box-shadow: 0 8px 20px rgba(102, 126, 234, 0.5);
+      transform: scale(1.05);
+    }
+
+    .theme-toggle-slider {
+      width: 24px;
+      height: 24px;
+      background: white;
+      border-radius: 50%;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+
+    body.dark-mode .theme-toggle {
+      background: linear-gradient(135deg, #2d2d44 0%, #1a1a2e 100%);
+    }
+
+    body.dark-mode .theme-toggle-slider {
+      transform: translateX(30px);
+    }
+
+    .theme-toggle-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .theme-label {
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: #2d3748;
+    }
+
+    /* Dark Mode Styles */
+    body.dark-mode {
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    }
+
+    body.dark-mode .navbar {
+      background: #1e1e2e;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    body.dark-mode .navbar-brand {
+      color: #9ca3ff !important;
+    }
+
+    body.dark-mode .btn-outline-primary {
+      border-color: #9ca3ff;
+      color: #9ca3ff;
+    }
+
+    body.dark-mode .btn-outline-primary:hover {
+      background: #9ca3ff;
+      color: #1e1e2e;
+      border-color: #9ca3ff;
+    }
+
+    body.dark-mode .theme-label {
+      color: #e0e0e0;
+    }
+
+    body.dark-mode .dashboard-header {
+      background: #1e1e2e;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    }
+
+    body.dark-mode .dashboard-header h1 {
+      color: #9ca3ff;
+    }
+
+    body.dark-mode .dashboard-header p {
+      color: #a0a0c0;
+    }
+
+    body.dark-mode .stat-card {
+      background: #1e1e2e;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    }
+
+    body.dark-mode .stat-value {
+      color: #e0e0e0;
+    }
+
+    body.dark-mode .stat-label {
+      color: #a0a0c0;
+    }
+
+    body.dark-mode .content-section {
+      background: #1e1e2e;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    }
+
+    body.dark-mode .section-header {
+      border-bottom-color: #3d3d5c;
+    }
+
+    body.dark-mode .section-header h2 {
+      color: #9ca3ff;
+    }
+
+    body.dark-mode .btn-view-all {
+      color: #9ca3ff;
+    }
+
+    body.dark-mode .btn-view-all:hover {
+      color: #b8bdff;
+    }
+
+    body.dark-mode .trip-card {
+      border-color: #3d3d5c;
+      background: #252538;
+    }
+
+    body.dark-mode .trip-card:hover {
+      border-color: #9ca3ff;
+      box-shadow: 0 5px 20px rgba(156, 163, 255, 0.2);
+    }
+
+    body.dark-mode .trip-destination {
+      color: #e0e0e0;
+    }
+
+    body.dark-mode .trip-date {
+      color: #a0a0c0;
+    }
+
+    body.dark-mode .badge-interest {
+      background: #2d2d44;
+      color: #9ca3ff;
+    }
+
+    body.dark-mode .badge-companion {
+      background: #3d2d3d;
+      color: #f8b4d9;
+    }
+
+    body.dark-mode .badge-budget {
+      background: #1f3d2f;
+      color: #6ee7b7;
+    }
+
+    body.dark-mode .empty-state h3 {
+      color: #a0a0c0;
+    }
+
+    body.dark-mode .empty-state p {
+      color: #6c6c8c;
+    }
+
+    body.dark-mode .empty-state i {
+      color: #3d3d5c;
+    }
+
+    body.dark-mode .btn-logout {
+      background: #3d2d2d;
+      color: #ff6b6b;
+    }
+
+    body.dark-mode .btn-logout:hover {
+      background: #dc3545;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="navbar navbar-expand-lg">
+    <div class="container">
+      <div class="d-flex align-items-center gap-3">
+        <!-- Back Button -->
+        <a href="travel.html" class="btn btn-sm btn-outline-primary" style="border-radius: 20px; padding: 8px 20px;">
+          <i class="fas fa-arrow-left me-2"></i>Back
+        </a>
+        <a class="navbar-brand" href="travel.html">
+          <i class="fas fa-plane-departure"></i>
+          Travel Planner
+        </a>
+      </div>
+      <div class="d-flex align-items-center gap-3">
+        <!-- Theme Toggle -->
+        <div class="theme-toggle-wrapper">
+          <span class="theme-label" id="themeLabel">Light Mode</span>
+          <div class="theme-toggle" id="themeToggle">
+            <div class="theme-toggle-slider">
+              <i class="fas fa-sun" id="themeIcon"></i>
+            </div>
+          </div>
+        </div>
+        
+        <!-- User Profile - Avatar Only -->
+        <div class="dropdown">
+          <img src="https://ui-avatars.com/api/?name=User&background=667eea&color=fff&size=128" 
+               alt="User" 
+               class="user-avatar dropdown-toggle" 
+               id="userAvatar" 
+               data-bs-toggle="dropdown" 
+               aria-expanded="false"
+               style="cursor: pointer;">
+          <ul class="dropdown-menu dropdown-menu-end">
+            <li class="px-3 py-2 border-bottom">
+              <div class="fw-bold" id="userName">Loading...</div>
+              <small class="text-muted" id="userEmail">Loading...</small>
+            </li>
+            <li><a class="dropdown-item" href="dashboard.html"><i class="fas fa-tachometer-alt me-2"></i> Dashboard</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" href="#" onclick="handleLogout()"><i class="fas fa-sign-out-alt me-2"></i> Logout</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Dashboard Container -->
+  <div class="dashboard-container">
+    <!-- Dashboard Header -->
+    <div class="dashboard-header">
+      <h1>Welcome Back!</h1>
+      <p>Track your travel planning journey and saved trips.</p>
+    </div>
+
+    <!-- Stats Grid -->
+    <div class="stats-grid" id="statsGrid">
+      <div class="stat-card searches">
+        <div class="stat-icon">
+          <i class="fas fa-search"></i>
+        </div>
+        <div class="stat-value" id="totalSearches">0</div>
+        <div class="stat-label">Total Searches</div>
+      </div>
+      <div class="stat-card itineraries">
+        <div class="stat-icon">
+          <i class="fas fa-map-marked-alt"></i>
+        </div>
+        <div class="stat-value" id="totalItineraries">0</div>
+        <div class="stat-label">Itineraries Created</div>
+      </div>
+      <div class="stat-card saved">
+        <div class="stat-icon">
+          <i class="fas fa-heart"></i>
+        </div>
+        <div class="stat-value" id="savedTrips">0</div>
+        <div class="stat-label">Saved Trips</div>
+      </div>
+    </div>
+
+    <!-- Recent Searches -->
+    <div class="content-section">
+      <div class="section-header">
+        <h2><i class="fas fa-history me-2"></i>Recent Searches</h2>
+        <a href="#" class="btn-view-all">View All →</a>
+      </div>
+      <div id="recentSearches">
+        <div class="loading-container">
+          <div class="spinner-border" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Saved Trips -->
+    <div class="content-section">
+      <div class="section-header">
+        <h2><i class="fas fa-bookmark me-2"></i>Saved Trips</h2>
+        <a href="#" class="btn-view-all">View All →</a>
+      </div>
+      <div id="savedTripsContainer">
+        <div class="loading-container">
+          <div class="spinner-border" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Trip Details Modal -->
+  <div class="modal fade" id="tripModal" tabindex="-1" aria-labelledby="tripModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+      <div class="modal-content" style="background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); color: white; border: none; border-radius: 20px;">
+        <div class="modal-header" style="border-bottom: 1px solid rgba(255,255,255,0.1);">
+          <h5 class="modal-title" id="tripModalLabel">
+            <i class="fas fa-map-marked-alt me-2"></i><span id="modalDestination"></span>
+          </h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body" style="max-height: 70vh; overflow-y: auto;">
+          <div id="modalTripDetails" style="white-space: pre-wrap; line-height: 1.8; font-size: 1rem;"></div>
+        </div>
+        <div class="modal-footer" style="border-top: 1px solid rgba(255,255,255,0.1);">
+          <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary" onclick="downloadItinerary()">
+            <i class="fas fa-download me-2"></i>Download PDF
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Firebase SDK -->
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+    import { 
+      getAuth, 
+      onAuthStateChanged,
+      signOut
+    } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+
+    // Firebase Configuration - REPLACE WITH YOUR CONFIG
+    const firebaseConfig = {
+      apiKey: "AIzaSyBBWMn8wuLwHfRdKRbRZZTH7EeOmZiIiR4",
+      authDomain: "travel-planner-5f52c.firebaseapp.com",
+      projectId: "travel-planner-5f52c",
+      storageBucket: "travel-planner-5f52c.firebasestorage.app",
+      messagingSenderId: "242478277763",
+      appId: "1:242478277763:web:4508544b42aa0fe7bce7b6"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    let currentUser = null;
+    let idToken = null;
+
+    // Check authentication
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        currentUser = user;
+        idToken = await user.getIdToken();
+        
+        // Update user profile in UI
+        document.getElementById('userName').textContent = user.displayName || 'User';
+        document.getElementById('userEmail').textContent = user.email;
+        
+        // Set profile photo with fallback
+        const userAvatarElement = document.getElementById('userAvatar');
+        const displayName = user.displayName || user.email.split('@')[0];
+        const fallbackUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}&background=667eea&color=fff&size=128`;
+        
+        if (user.photoURL) {
+          userAvatarElement.src = user.photoURL;
+          // Add error handler to fall back to avatar if photo fails to load
+          userAvatarElement.onerror = function() {
+            console.log('Failed to load user photo, using fallback');
+            this.onerror = null; // Prevent infinite loop
+            this.src = fallbackUrl;
+          };
+        } else {
+          userAvatarElement.src = fallbackUrl;
+        }
+
+        // Load dashboard data
+        await loadDashboardData();
+      } else {
+        // Not logged in, redirect to login
+        window.location.href = 'login.html';
+      }
+    });
+
+    // Load dashboard data
+    async function loadDashboardData() {
+      try {
+        console.log('🔄 Loading dashboard data...');
+        
+        // Get user profile with stats
+        const userResponse = await fetch('https://travel-planner-backend-ao9v.onrender.com/api/auth/me', {
+          headers: {
+            'Authorization': `Bearer ${idToken}`
+          }
+        });
+
+        console.log('👤 User profile response status:', userResponse.status);
+        
+        if (userResponse.ok) {
+          const userData = await userResponse.json();
+          console.log('📊 User stats:', userData.stats);
+          
+          // Update stats
+          document.getElementById('totalSearches').textContent = userData.stats.totalSearches || 0;
+          document.getElementById('totalItineraries').textContent = userData.stats.totalItineraries || 0;
+          document.getElementById('savedTrips').textContent = userData.stats.savedTrips || 0;
+        } else {
+          const errorData = await userResponse.json();
+          console.error('❌ Failed to load user stats:', errorData);
+        }
+
+        // Load recent searches
+        await loadRecentSearches();
+
+        // Load saved trips
+        await loadSavedTrips();
+
+      } catch (error) {
+        console.error('❌ Error loading dashboard data:', error);
+      }
+    }
+
+    // Load recent searches
+    async function loadRecentSearches() {
+      const container = document.getElementById('recentSearches');
+      
+      try {
+        console.log('📥 Fetching recent searches...');
+        const response = await fetch('https://travel-planner-backend-ao9v.onrender.com/api/user/search-history?limit=5', {
+          headers: {
+            'Authorization': `Bearer ${idToken}`
+          }
+        });
+
+        console.log('📊 Search history response status:', response.status);
+        
+        if (response.ok) {
+          const searches = await response.json();
+          console.log('📋 Searches loaded:', searches.length, searches);
+          
+          if (searches.length === 0) {
+            container.innerHTML = `
+              <div class="empty-state">
+                <i class="fas fa-search"></i>
+                <h3>No searches yet</h3>
+                <p>Start planning your next adventure!</p>
+                <a href="travel.html" class="btn-primary-custom">Create Itinerary</a>
+              </div>
+            `;
+          } else {
+            container.innerHTML = searches.map(search => createTripCard(search, false)).join('');
+          }
+        } else {
+          const errorData = await response.json();
+          console.error('❌ Failed to load searches:', errorData);
+          container.innerHTML = `<p class="text-danger">Failed to load recent searches: ${errorData.error || 'Unknown error'}</p>`;
+        }
+      } catch (error) {
+        console.error('❌ Error loading recent searches:', error);
+        container.innerHTML = `<p class="text-danger">Failed to load recent searches: ${error.message}</p>`;
+      }
+    }
+
+    // Load saved trips
+    async function loadSavedTrips() {
+      const container = document.getElementById('savedTripsContainer');
+      
+      try {
+        console.log('💾 Fetching saved trips...');
+        const response = await fetch('https://travel-planner-backend-ao9v.onrender.com/api/user/saved-trips?limit=5', {
+          headers: {
+            'Authorization': `Bearer ${idToken}`
+          }
+        });
+
+        console.log('📊 Saved trips response status:', response.status);
+        
+        if (response.ok) {
+          const trips = await response.json();
+          console.log('💖 Saved trips loaded:', trips.length, trips);
+          
+          if (trips.length === 0) {
+            container.innerHTML = `
+              <div class="empty-state">
+                <i class="fas fa-heart"></i>
+                <h3>No saved trips</h3>
+                <p>Save your favorite itineraries to access them later!</p>
+              </div>
+            `;
+          } else {
+            container.innerHTML = trips.map(trip => createTripCard(trip, true)).join('');
+          }
+        } else {
+          const errorData = await response.json();
+          console.error('❌ Failed to load saved trips:', errorData);
+          container.innerHTML = `<p class="text-danger">Failed to load saved trips: ${errorData.error || 'Unknown error'}</p>`;
+        }
+      } catch (error) {
+        console.error('❌ Error loading saved trips:', error);
+        container.innerHTML = `<p class="text-danger">Failed to load saved trips: ${error.message}</p>`;
+      }
+    }
+
+    // Create trip card HTML
+    function createTripCard(trip, isSaved) {
+      const date = new Date(trip.createdAt).toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric'
+      });
+
+      const ratingHTML = trip.rating ? `
+        <div class="rating-stars">
+          ${'★'.repeat(trip.rating)}${'☆'.repeat(5 - trip.rating)}
+        </div>
+      ` : '';
+
+      return `
+        <div class="trip-card">
+          <div class="trip-header">
+            <div>
+              <div class="trip-destination">${trip.destination}</div>
+              <div class="trip-date">
+                <i class="far fa-calendar me-1"></i>${trip.dates || date}
+              </div>
+            </div>
+            ${ratingHTML}
+          </div>
+          <div class="trip-badges">
+            ${trip.interests.map(interest => 
+              `<span class="badge-custom badge-interest">${interest}</span>`
+            ).join('')}
+            ${trip.travelCompanion ? `<span class="badge-custom badge-companion">${trip.travelCompanion}</span>` : ''}
+            ${trip.budget ? `<span class="badge-custom badge-budget">₹${trip.budget}</span>` : ''}
+          </div>
+          <div class="trip-actions">
+            <button class="btn-action btn-view" onclick="viewTrip('${trip._id}')">
+              <i class="far fa-eye me-1"></i>View
+            </button>
+            ${!isSaved ? `
+              <button class="btn-action btn-save" onclick="saveTrip('${trip._id}')">
+                <i class="far fa-heart me-1"></i>Save
+              </button>
+            ` : ''}
+            ${!trip.rating ? `
+              <button class="btn-action btn-rate" onclick="rateTrip('${trip._id}')">
+                <i class="far fa-star me-1"></i>Rate
+              </button>
+            ` : ''}
+            ${isSaved ? `
+              <button class="btn-action btn-unsave" onclick="unsaveTrip('${trip._id}')">
+                <i class="far fa-heart-broken me-1"></i>Unsave
+              </button>
+              <button class="btn-action btn-delete" onclick="deleteTrip('${trip._id}')">
+                <i class="far fa-trash-alt me-1"></i>Delete
+              </button>
+            ` : ''}
+          </div>
+        </div>
+      `;
+    }
+
+    // View trip details
+    window.viewTrip = async function(tripId) {
+      try {
+        console.log('👁️ Viewing trip:', tripId);
+        const response = await fetch(`https://travel-planner-backend-ao9v.onrender.com/api/user/trip/${tripId}`, {
+          headers: {
+            'Authorization': `Bearer ${idToken}`
+          }
+        });
+
+        if (response.ok) {
+          const trip = await response.json();
+          
+          // Store trip data globally for download function
+          window.currentTrip = trip;
+          
+          // Update modal content
+          document.getElementById('modalDestination').textContent = trip.destination;
+          document.getElementById('modalTripDetails').innerHTML = formatItinerary(trip.itinerary);
+          
+          // Show modal
+          const modal = new bootstrap.Modal(document.getElementById('tripModal'));
+          modal.show();
+        } else {
+          alert('Failed to load trip details.');
+        }
+      } catch (error) {
+        console.error('❌ Error viewing trip:', error);
+        alert('Failed to load trip details: ' + error.message);
+      }
+    };
+
+    // Format itinerary for better display
+    function formatItinerary(text) {
+      // Convert URLs to clickable links
+      let formatted = text.replace(
+        /(https?:\/\/[^\s]+)/g, 
+        '<a href="$1" target="_blank" rel="noopener noreferrer" style="color: #90caf9;">$1</a>'
+      );
+      
+      // Make headers bold (lines starting with ## or Day X:)
+      formatted = formatted.replace(
+        /^(#{1,3}\s+.+|Day\s+\d+:.+)$/gm,
+        '<strong style="color: #fff; font-size: 1.1em;">$1</strong>'
+      );
+      
+      return formatted;
+    }
+
+    // Download itinerary as text file
+    window.downloadItinerary = function() {
+      if (!window.currentTrip) return;
+      
+      const trip = window.currentTrip;
+      const content = `Travel Itinerary - ${trip.destination}\n` +
+                     `Dates: ${trip.dates || new Date(trip.startDate).toLocaleDateString() + ' to ' + new Date(trip.endDate).toLocaleDateString()}\n` +
+                     `Travel Companion: ${trip.travelCompanion || 'Not specified'}\n` +
+                     `Budget: ${trip.budget ? '$' + trip.budget : 'Not specified'}\n\n` +
+                     `${'-'.repeat(50)}\n\n` +
+                     `${trip.itinerary}`;
+      
+      const blob = new Blob([content], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${trip.destination.replace(/\s+/g, '_')}_Itinerary.txt`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    };
+
+    // Save trip to favorites
+    window.saveTrip = async function(tripId) {
+      try {
+        console.log('💾 Saving trip:', tripId);
+        const response = await fetch(`https://travel-planner-backend-ao9v.onrender.com/api/user/save-trip/${tripId}`, {
+          method: 'PUT',
+          headers: {
+            'Authorization': `Bearer ${idToken}`
+          }
+        });
+
+        if (response.ok) {
+          alert('✅ Trip saved to favorites!');
+          await loadDashboardData();
+        } else {
+          const errorData = await response.json();
+          alert('❌ Failed to save trip: ' + (errorData.error || 'Unknown error'));
+        }
+      } catch (error) {
+        console.error('❌ Error saving trip:', error);
+        alert('Failed to save trip: ' + error.message);
+      }
+    };
+
+    // Unsave trip (move back to recent searches)
+    window.unsaveTrip = async function(tripId) {
+      if (!confirm('Remove this trip from your favorites?')) return;
+
+      try {
+        console.log('💔 Unsaving trip:', tripId);
+        const response = await fetch(`https://travel-planner-backend-ao9v.onrender.com/api/user/unsave-trip/${tripId}`, {
+          method: 'PUT',
+          headers: {
+            'Authorization': `Bearer ${idToken}`
+          }
+        });
+
+        if (response.ok) {
+          alert('✅ Trip removed from favorites!');
+          await loadDashboardData();
+        } else {
+          const errorData = await response.json();
+          alert('❌ Failed to unsave trip: ' + (errorData.error || 'Unknown error'));
+        }
+      } catch (error) {
+        console.error('❌ Error unsaving trip:', error);
+        alert('Failed to unsave trip: ' + error.message);
+      }
+    };
+
+    // Rate trip
+    window.rateTrip = async function(tripId) {
+      const rating = prompt('Rate this trip (1-5 stars):');
+      if (!rating || rating < 1 || rating > 5) return;
+
+      try {
+        const response = await fetch(`https://travel-planner-backend-ao9v.onrender.com/api/user/rate/${tripId}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${idToken}`
+          },
+          body: JSON.stringify({ rating: parseInt(rating) })
+        });
+
+        if (response.ok) {
+          alert('✅ Rating saved!');
+          await loadDashboardData();
+        }
+      } catch (error) {
+        console.error('Error rating trip:', error);
+        alert('Failed to save rating.');
+      }
+    };
+
+    // Delete trip
+    window.deleteTrip = async function(tripId) {
+      if (!confirm('Are you sure you want to delete this trip?')) return;
+
+      try {
+        const response = await fetch(`https://travel-planner-backend-ao9v.onrender.com/api/user/trip/${tripId}`, {
+          method: 'DELETE',
+          headers: {
+            'Authorization': `Bearer ${idToken}`
+          }
+        });
+
+        if (response.ok) {
+          alert('✅ Trip deleted!');
+          await loadDashboardData();
+        }
+      } catch (error) {
+        console.error('Error deleting trip:', error);
+        alert('Failed to delete trip.');
+      }
+    };
+
+    // Logout
+    window.handleLogout = async function() {
+      if (!confirm('Are you sure you want to logout?')) return;
+
+      try {
+        await signOut(auth);
+        window.location.href = 'login.html';
+      } catch (error) {
+        console.error('Logout error:', error);
+        alert('Failed to logout. Please try again.');
+      }
+    };
+  </script>
+
+  <!-- Theme Toggle Script -->
+  <script>
+    // Theme toggle functionality
+    const themeToggle = document.getElementById('themeToggle');
+    const themeIcon = document.getElementById('themeIcon');
+    const themeLabel = document.getElementById('themeLabel');
+    const body = document.body;
+
+    // Check for saved theme preference or default to 'light'
+    const currentTheme = localStorage.getItem('theme') || 'light';
+    if (currentTheme === 'dark') {
+      body.classList.add('dark-mode');
+      themeIcon.classList.remove('fa-sun');
+      themeIcon.classList.add('fa-moon');
+      themeLabel.textContent = 'Dark Mode';
+    }
+
+    // Theme toggle functionality
+    themeToggle.addEventListener('click', () => {
+      body.classList.toggle('dark-mode');
+      
+      // Update icon and label
+      if (body.classList.contains('dark-mode')) {
+        themeIcon.classList.remove('fa-sun');
+        themeIcon.classList.add('fa-moon');
+        themeLabel.textContent = 'Dark Mode';
+        localStorage.setItem('theme', 'dark');
+        
+        // Show notification
+        showThemeNotification('🌙 Dark mode activated!');
+      } else {
+        themeIcon.classList.remove('fa-moon');
+        themeIcon.classList.add('fa-sun');
+        themeLabel.textContent = 'Light Mode';
+        localStorage.setItem('theme', 'light');
+        
+        // Show notification
+        showThemeNotification('☀️ Light mode activated!');
+      }
+    });
+
+    // Theme notification function
+    function showThemeNotification(message) {
+      const notification = document.createElement('div');
+      notification.style.cssText = `
+        position: fixed;
+        top: 80px;
+        right: 20px;
+        background: white;
+        color: #2d3748;
+        padding: 15px 25px;
+        border-radius: 10px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        z-index: 10000;
+        font-weight: 600;
+        animation: slideIn 0.3s ease-out;
+      `;
+      
+      if (body.classList.contains('dark-mode')) {
+        notification.style.background = '#1e1e2e';
+        notification.style.color = '#e0e0e0';
+      }
+      
+      notification.textContent = message;
+      document.body.appendChild(notification);
+      
+      // Add slide in animation
+      const style = document.createElement('style');
+      style.textContent = `
+        @keyframes slideIn {
+          from {
+            transform: translateX(400px);
+            opacity: 0;
+          }
+          to {
+            transform: translateX(0);
+            opacity: 1;
+          }
+        }
+      `;
+      document.head.appendChild(style);
+      
+      // Remove notification after 2 seconds
+      setTimeout(() => {
+        notification.style.animation = 'slideOut 0.3s ease-in';
+        notification.style.transform = 'translateX(400px)';
+        notification.style.opacity = '0';
+        setTimeout(() => notification.remove(), 300);
+      }, 2000);
+    }
+  </script>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
