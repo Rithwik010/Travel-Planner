@@ -14,11 +14,21 @@
 - **PDF Export**: Download your itinerary as PDF
 - **Responsive Design**: Works perfectly on all devices
 
-## 🚀 Recent Updates
+## 🚀 Recent Updates (October 2025)
 
+### ✅ Latest Fixes (v2.1)
+- 🐛 **Fixed API Endpoints**: Resolved backend connectivity issues (404 errors)
+- 🔧 **Local Development**: Updated to use localhost:3001 for all API calls
+- ✅ **Itinerary Generation**: Now working perfectly with detailed AI-generated itineraries
+- 🖼️ **Image Gallery**: Fixed destination image loading with SERP API
+- 🔐 **Authentication**: Fixed Firebase user sync with backend
+
+### ✅ Previous Updates (v2.0)
 - ✅ Added 20-day maximum trip duration constraint
 - ✅ Rebranded to PlexoTravel with animated logo
 - ✅ Enhanced dark mode visibility for all alerts and text
+- ✅ Budget validation (positive values only, mandatory field)
+- ✅ Destination autocomplete with real place validation
 - ✅ Real-time destination validation with autocomplete
 - ✅ Budget validation (no negative values, mandatory field)
 - ✅ Custom alert modals for better UX
