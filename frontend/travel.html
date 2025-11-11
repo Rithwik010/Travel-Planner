@@ -1443,7 +1443,12 @@
 
     <!-- Generated Itinerary Display -->
     <div id="generatedItinerary" class="itinerary-card d-none">
-      <h3 id="itineraryTitle"><i class="fas fa-route"></i> Your Custom Itinerary</h3>
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3 id="itineraryTitle" class="mb-0"><i class="fas fa-route"></i> Your Custom Itinerary</h3>
+        <button class="btn btn-outline-danger btn-sm" id="clearItineraryBtn" title="Clear itinerary and start fresh">
+          <i class="fas fa-times"></i> Clear
+        </button>
+      </div>
       <div class="itinerary-content" id="itineraryContent"></div>
       <div class="text-center mt-4">
         <button class="btn btn-success" id="downloadPdfBtn">
@@ -1797,6 +1802,56 @@
       offset: 100
     });
 
+    // ==========================================
+    // RESTORE ITINERARY ON PAGE LOAD
+    // ==========================================
+    function restoreItinerary() {
+      const savedItinerary = localStorage.getItem('currentItinerary');
+      if (savedItinerary) {
+        try {
+          const itineraryData = JSON.parse(savedItinerary);
+          const itineraryDisplay = document.getElementById('generatedItinerary');
+          const itineraryContent = document.getElementById('itineraryContent');
+          const itineraryTitle = document.getElementById('itineraryTitle');
+          
+          // Restore the itinerary content
+          itineraryContent.innerHTML = itineraryData.html;
+          itineraryTitle.innerHTML = `<i class="fas fa-route"></i> ${itineraryData.title}`;
+          itineraryDisplay.classList.remove('d-none');
+          
+          console.log('✅ Itinerary restored from localStorage');
+          
+          // Also restore the gallery for the destination (without scrolling)
+          if (itineraryData.destination) {
+            updateGallery(itineraryData.destination, false);
+          }
+        } catch (error) {
+          console.error('Error restoring itinerary:', error);
+          localStorage.removeItem('currentItinerary');
+        }
+      }
+    }
+
+    // Call restore function when page loads
+    restoreItinerary();
+
+    // Clear itinerary button functionality
+    document.getElementById('clearItineraryBtn')?.addEventListener('click', () => {
+      if (confirm('Are you sure you want to clear the current itinerary?')) {
+        localStorage.removeItem('currentItinerary');
+        document.getElementById('generatedItinerary').classList.add('d-none');
+        document.getElementById('itineraryContent').innerHTML = '';
+        document.getElementById('itineraryTitle').innerHTML = '<i class="fas fa-route"></i> Your Custom Itinerary';
+        showAlert('info', '🗑️ Itinerary cleared. Create a new one above!');
+        
+        // Scroll back to form
+        document.getElementById('itineraryForm').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
+
+    // ==========================================
+    // DATE PICKER CONFIGURATION
+    // ==========================================
     // Set minimum date for date pickers (today)
     const today = new Date().toISOString().split('T')[0];
     const startDateInput = document.getElementById('startDate');
@@ -2204,6 +2259,20 @@
         itineraryContent.innerHTML = itineraryHTML;
         itineraryDisplay.classList.remove('d-none');
         
+        // Update the itinerary title
+        const itineraryTitle = document.getElementById('itineraryTitle');
+        itineraryTitle.innerHTML = `<i class="fas fa-route"></i> ${destination} - ${days} Days`;
+        
+        // Save itinerary to localStorage for persistence
+        const itineraryData = {
+          html: itineraryHTML,
+          title: `${destination} - ${days} Days`,
+          destination: destination,
+          days: days,
+          timestamp: new Date().toISOString()
+        };
+        localStorage.setItem('currentItinerary', JSON.stringify(itineraryData));
+        
         // Scroll to the itinerary smoothly
         setTimeout(() => {
           itineraryDisplay.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -2324,7 +2393,7 @@
     });
 
     // Automatic Gallery Update
-    async function updateGallery(destination) {
+    async function updateGallery(destination, scrollToGallery = true) {
       const galleryContainer = document.getElementById('gallery-container');
       const galleryTitle = document.getElementById('gallery-destination');
       
@@ -2335,7 +2404,8 @@
         galleryTitle.textContent = `Photos of ${destination}`;
         
         // Fetch images for the destination
-        const response = await fetch(`http://localhost:3001/api/gallery/search-images?query=${encodeURIComponent(destination)}`);
+        const apiUrl = window.API_CONFIG ? API_CONFIG.getUrl('searchImages') : 'http://localhost:3001/api/gallery/search-images';
+        const response = await fetch(`${apiUrl}?query=${encodeURIComponent(destination)}`);
         const images = await response.json();
 
         if (!response.ok) {
@@ -2367,10 +2437,12 @@
         // Refresh AOS animations
         AOS.refresh();
 
-        // Scroll to gallery after a short delay
-        setTimeout(() => {
-          document.getElementById('gallery').scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }, 1000);
+        // Scroll to gallery after a short delay (only if requested)
+        if (scrollToGallery) {
+          setTimeout(() => {
+            document.getElementById('gallery').scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }, 1000);
+        }
       } catch (error) {
         console.error('Error:', error);
         galleryTitle.textContent = 'Error loading images. Please try again.';
@@ -2393,5 +2465,8 @@
       }
     });
   </script>
+
+  <!-- API Configuration -->
+  <script src="config.js"></script>
 </body>
 </html>

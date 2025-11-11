@@ -755,6 +755,84 @@
       try {
         console.log('🔄 Loading dashboard data...');
         
+        // Check for cached data first
+        const cachedData = localStorage.getItem('dashboardCache');
+        if (cachedData) {
+          try {
+            const cache = JSON.parse(cachedData);
+            const cacheAge = Date.now() - cache.timestamp;
+            
+            // Use cache if less than 5 minutes old
+            if (cacheAge < 5 * 60 * 1000) {
+              console.log('⚡ Using cached dashboard data for instant load!');
+              
+              // Load cached user stats
+              if (cache.userData && cache.userData.stats) {
+                document.getElementById('totalSearches').textContent = cache.userData.stats.totalSearches || 0;
+                document.getElementById('totalItineraries').textContent = cache.userData.stats.totalItineraries || 0;
+                document.getElementById('savedTrips').textContent = cache.userData.stats.savedTrips || 0;
+              }
+              
+              // Load cached searches
+              if (cache.searches) {
+                const searchContainer = document.getElementById('recentSearches');
+                if (cache.searches.length === 0) {
+                  searchContainer.innerHTML = `
+                    <div class="empty-state">
+                      <i class="fas fa-search"></i>
+                      <h3>No searches yet</h3>
+                      <p>Start planning your next adventure!</p>
+                      <a href="travel.html" class="btn-primary-custom">Create Itinerary</a>
+                    </div>
+                  `;
+                } else {
+                  searchContainer.innerHTML = cache.searches.map(search => createTripCard(search, false)).join('');
+                }
+              }
+              
+              // Load cached trips
+              if (cache.trips) {
+                const tripsContainer = document.getElementById('savedTripsContainer');
+                if (cache.trips.length === 0) {
+                  tripsContainer.innerHTML = `
+                    <div class="empty-state">
+                      <i class="fas fa-heart"></i>
+                      <h3>No saved trips yet</h3>
+                      <p>Save your favorite itineraries here!</p>
+                      <a href="travel.html" class="btn-primary-custom">Create Itinerary</a>
+                    </div>
+                  `;
+                } else {
+                  tripsContainer.innerHTML = cache.trips.map(trip => createTripCard(trip, true)).join('');
+                }
+              }
+              
+              console.log('✅ Cached data loaded instantly!');
+              
+              // Refresh data in background
+              console.log('🔄 Refreshing data in background...');
+              refreshDashboardData();
+              return;
+            } else {
+              console.log('⏰ Cache expired, fetching fresh data...');
+            }
+          } catch (e) {
+            console.error('❌ Error parsing cache:', e);
+            localStorage.removeItem('dashboardCache');
+          }
+        }
+        
+        // No valid cache, load fresh data
+        await refreshDashboardData();
+
+      } catch (error) {
+        console.error('❌ Error loading dashboard data:', error);
+      }
+    }
+
+    // Refresh dashboard data from server
+    async function refreshDashboardData() {
+      try {
         // Get user profile with stats
         const userResponse = await fetch('https://travel-planner-backend-ao9v.onrender.com/api/auth/me', {
           headers: {
@@ -772,6 +850,9 @@
           document.getElementById('totalSearches').textContent = userData.stats.totalSearches || 0;
           document.getElementById('totalItineraries').textContent = userData.stats.totalItineraries || 0;
           document.getElementById('savedTrips').textContent = userData.stats.savedTrips || 0;
+          
+          // Update cache with user data
+          updateDashboardCache({ userData });
         } else {
           const errorData = await userResponse.json();
           console.error('❌ Failed to load user stats:', errorData);
@@ -784,7 +865,27 @@
         await loadSavedTrips();
 
       } catch (error) {
-        console.error('❌ Error loading dashboard data:', error);
+        console.error('❌ Error refreshing dashboard data:', error);
+      }
+    }
+
+    // Helper function to update dashboard cache
+    function updateDashboardCache(newData) {
+      try {
+        const cachedData = localStorage.getItem('dashboardCache');
+        let cache = cachedData ? JSON.parse(cachedData) : {};
+        
+        // Merge new data with existing cache
+        cache = {
+          ...cache,
+          ...newData,
+          timestamp: Date.now()
+        };
+        
+        localStorage.setItem('dashboardCache', JSON.stringify(cache));
+        console.log('💾 Dashboard cache updated');
+      } catch (error) {
+        console.error('❌ Error updating cache:', error);
       }
     }
 
@@ -805,6 +906,9 @@
         if (response.ok) {
           const searches = await response.json();
           console.log('📋 Searches loaded:', searches.length, searches);
+          
+          // Update cache
+          updateDashboardCache({ searches });
           
           if (searches.length === 0) {
             container.innerHTML = `
@@ -846,6 +950,9 @@
         if (response.ok) {
           const trips = await response.json();
           console.log('💖 Saved trips loaded:', trips.length, trips);
+          
+          // Update cache
+          updateDashboardCache({ trips });
           
           if (trips.length === 0) {
             container.innerHTML = `

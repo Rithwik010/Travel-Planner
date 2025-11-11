@@ -405,6 +405,9 @@
         // Create/update user in MongoDB via backend
         await syncUserWithBackend(user, idToken);
 
+        // Pre-fetch dashboard data for instant loading
+        preFetchDashboardData(idToken); // Don't await - run in background
+
         showAlert('success', '✅ Login successful! Redirecting...');
 
         // Redirect to main page
@@ -455,6 +458,9 @@
 
         // Sync with backend
         await syncUserWithBackend(user, idToken);
+
+        // Pre-fetch dashboard data for instant loading
+        preFetchDashboardData(idToken); // Don't await - run in background
 
         showAlert('success', '✅ Google sign-in successful! Redirecting...');
 
@@ -517,6 +523,45 @@
       } catch (error) {
         console.error('Backend sync error:', error);
         // Don't throw - allow user to continue even if backend sync fails
+      }
+    }
+
+    // Pre-fetch dashboard data for instant loading
+    async function preFetchDashboardData(idToken) {
+      try {
+        console.log('🚀 Pre-fetching dashboard data...');
+        
+        // Fetch all dashboard data in parallel
+        const [userResponse, searchesResponse, tripsResponse] = await Promise.all([
+          fetch('https://travel-planner-backend-ao9v.onrender.com/api/auth/me', {
+            headers: { 'Authorization': `Bearer ${idToken}` }
+          }),
+          fetch('https://travel-planner-backend-ao9v.onrender.com/api/user/search-history?limit=5', {
+            headers: { 'Authorization': `Bearer ${idToken}` }
+          }),
+          fetch('https://travel-planner-backend-ao9v.onrender.com/api/user/saved-trips?limit=5', {
+            headers: { 'Authorization': `Bearer ${idToken}` }
+          })
+        ]);
+
+        // Parse responses
+        const userData = userResponse.ok ? await userResponse.json() : null;
+        const searches = searchesResponse.ok ? await searchesResponse.json() : [];
+        const trips = tripsResponse.ok ? await tripsResponse.json() : [];
+
+        // Cache the data with timestamp
+        const dashboardCache = {
+          userData,
+          searches,
+          trips,
+          timestamp: Date.now()
+        };
+
+        localStorage.setItem('dashboardCache', JSON.stringify(dashboardCache));
+        console.log('✅ Dashboard data pre-fetched and cached!');
+      } catch (error) {
+        console.error('❌ Error pre-fetching dashboard data:', error);
+        // Don't throw - this is optional optimization
       }
     }
 
