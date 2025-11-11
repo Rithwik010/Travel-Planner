@@ -1978,7 +1978,8 @@
       }, 2000);
     }
 
-    const API_URL = 'http://localhost:3001/api/generate-itinerary';
+    // Get API URL from config or fallback to localhost
+    const API_URL = window.API_CONFIG ? API_CONFIG.getUrl('generateItinerary') : 'http://localhost:3001/api/generate-itinerary';
     
     // Custom Alert Function (Dark Mode Compatible)
     function showCustomAlert(title, message) {
