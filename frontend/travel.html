@@ -1981,6 +1981,47 @@
     // Get API URL from config or fallback to localhost
     const API_URL = window.API_CONFIG ? API_CONFIG.getUrl('generateItinerary') : 'http://localhost:3001/api/generate-itinerary';
     
+    // Fetch with retry logic for handling server cold starts
+    async function fetchWithRetry(url, options, maxRetries = 3, initialDelay = 2000) {
+      let lastError;
+      
+      for (let attempt = 1; attempt <= maxRetries; attempt++) {
+        try {
+          console.log(`🔄 Attempt ${attempt}/${maxRetries} - Fetching from: ${url}`);
+          
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(), 60000); // 60 second timeout
+          
+          const response = await fetch(url, {
+            ...options,
+            signal: controller.signal
+          });
+          
+          clearTimeout(timeoutId);
+          return response;
+          
+        } catch (error) {
+          lastError = error;
+          console.error(`❌ Attempt ${attempt} failed:`, error.message);
+          
+          if (attempt < maxRetries) {
+            const delay = initialDelay * attempt; // Exponential backoff
+            console.log(`⏳ Waiting ${delay}ms before retry...`);
+            
+            // Update button text to show retry status
+            const btnText = document.getElementById('btnText');
+            if (btnText) {
+              btnText.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Server starting up... Retry ${attempt}/${maxRetries}`;
+            }
+            
+            await new Promise(resolve => setTimeout(resolve, delay));
+          }
+        }
+      }
+      
+      throw lastError;
+    }
+    
     // Custom Alert Function (Dark Mode Compatible)
     function showCustomAlert(title, message) {
       // Create overlay
@@ -2227,8 +2268,11 @@
           headers['Authorization'] = `Bearer ${token}`;
         }
         
-        // Make API call to backend
-        const response = await fetch(API_URL, {
+        // Show initial status
+        btnText.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Connecting to server...';
+        
+        // Make API call to backend with retry logic
+        const response = await fetchWithRetry(API_URL, {
           method: 'POST',
           headers: headers,
           body: JSON.stringify({
@@ -2240,11 +2284,14 @@
             endDate: endDate,
             travelCompanion: travelCompanion
           })
-        });
+        }, 3, 2000); // 3 retries with 2 second initial delay
+        
+        // Update status
+        btnText.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing your request...';
         
         if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(errorData.error || 'Failed to generate itinerary');
+          const errorData = await response.json().catch(() => ({ error: 'Server error' }));
+          throw new Error(errorData.error || `Server returned ${response.status}: ${response.statusText}`);
         }
         
         const data = await response.json();
@@ -2287,7 +2334,33 @@
         
       } catch (error) {
         console.error('Error:', error);
-        showAlert('danger', `❌ Error: ${error.message}`);
+        
+        // Provide user-friendly error messages
+        let errorMessage = error.message;
+        
+        if (error.name === 'AbortError') {
+          errorMessage = 'Request timed out. The server took too long to respond. Please try again.';
+        } else if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
+          errorMessage = 'Network error. Please check your internet connection and try again. If the problem persists, the server may be starting up - please wait a moment and retry.';
+        } else if (error.message.includes('500') || error.message.includes('502') || error.message.includes('503')) {
+          errorMessage = 'Server error. The server is having issues. Please wait a moment and try again.';
+        }
+        
+        showAlert('danger', `❌ Error: ${errorMessage}`);
+        
+        // Show additional help message for persistent errors
+        setTimeout(() => {
+          showCustomAlert(
+            'Having Trouble?',
+            'If you continue to experience issues:\n\n' +
+            '1. Wait 30-60 seconds for the server to wake up\n' +
+            '2. Check your internet connection\n' +
+            '3. Try refreshing the page\n' +
+            '4. Clear your browser cache\n\n' +
+            'The server may be sleeping and needs time to start.'
+          );
+        }, 1000);
+        
       } finally {
         // Reset button state
         generateBtn.disabled = false;
