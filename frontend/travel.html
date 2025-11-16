@@ -635,18 +635,259 @@
 
     /* Responsive */
     @media (max-width: 768px) {
+      /* Header adjustments */
+      .hero-header {
+        padding: 40px 0;
+      }
+      
       .hero-header h1 {
-        font-size: 2rem;
+        font-size: 1.8rem;
+        line-height: 1.2;
+      }
+      
+      .hero-header p {
+        font-size: 1rem;
+      }
+      
+      /* Logo adjustments */
+      .plexo-logo {
+        font-size: 1.3rem;
+        gap: 8px;
+      }
+      
+      .plexo-logo-icon {
+        width: 35px;
+        height: 35px;
+      }
+      
+      .plexo-logo-icon::before {
+        font-size: 20px;
+      }
+      
+      /* Navbar adjustments */
+      .modern-nav {
+        padding: 0.5rem 0;
+      }
+      
+      .modern-nav .nav-link {
+        padding: 0.4rem 0.8rem !important;
+        font-size: 0.9rem;
+      }
+      
+      /* Container adjustments */
+      .main-container {
+        padding: 25px 15px;
+        margin: -30px 10px 30px;
+        border-radius: 15px;
+      }
+      
+      /* Form adjustments */
+      .form-section {
+        padding: 20px 15px;
+        border-radius: 15px;
+      }
+      
+      .form-section h2 {
+        font-size: 1.8rem;
+        margin-bottom: 20px;
+      }
+      
+      .form-control, .form-select {
+        padding: 10px 15px;
+        font-size: 0.95rem;
+      }
+      
+      /* Interest chips - stack better on mobile */
+      .interests-container {
+        gap: 8px;
+        justify-content: center;
+      }
+      
+      .interest-chip,
+      .companion-chip {
+        padding: 10px 15px;
+        font-size: 0.85rem;
+        flex: 0 1 auto;
+        min-width: fit-content;
+      }
+      
+      .interest-chip i,
+      .companion-chip i {
+        font-size: 0.9rem;
+      }
+      
+      /* Button adjustments */
+      .btn-generate {
+        padding: 12px 30px;
+        font-size: 1rem;
+        width: 100%;
+      }
+      
+      /* Itinerary card adjustments */
+      .itinerary-card {
+        padding: 20px 15px;
+        border-radius: 15px;
+      }
+      
+      .itinerary-card h3 {
+        font-size: 1.5rem;
+        margin-bottom: 15px;
+      }
+      
+      .itinerary-content {
+        padding: 15px;
+        font-size: 0.95rem;
+        line-height: 1.6;
+        max-height: 500px;
+      }
+      
+      /* Gallery adjustments */
+      .gallery-section h2 {
+        font-size: 1.8rem;
+        margin-bottom: 25px;
+      }
+      
+      .gallery-item {
+        margin-bottom: 15px;
+      }
+      
+      /* Tabs/Pills adjustments */
+      .nav-pills {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      
+      .nav-pills .nav-link {
+        margin-bottom: 8px;
+        text-align: center;
+      }
+      
+      .tab-content {
+        padding: 15px;
+        font-size: 0.95rem;
+      }
+      
+      /* Modal adjustments */
+      .custom-alert-box {
+        width: 90%;
+        max-width: 90%;
+        padding: 25px;
+      }
+      
+      .custom-alert-box .alert-title {
+        font-size: 1.3rem;
+      }
+      
+      .custom-alert-box .alert-message {
+        font-size: 0.95rem;
+      }
+      
+      /* Carousel adjustments */
+      .carousel-item img {
+        height: 300px;
+      }
+      
+      .carousel-caption {
+        padding: 10px;
+        font-size: 0.9rem;
+      }
+      
+      .carousel-caption h5 {
+        font-size: 1.2rem;
+      }
+      
+      /* Theme toggle adjustments */
+      .theme-toggle-wrapper {
+        flex-direction: column;
+        gap: 5px;
+      }
+      
+      .theme-label {
+        font-size: 0.8rem;
+      }
+      
+      /* Alert adjustments */
+      .alert-modern {
+        padding: 15px 20px;
+        font-size: 0.95rem;
+      }
+      
+      /* Feedback section */
+      .feedback-row {
+        flex-direction: column;
+      }
+      
+      .about-box,
+      .connect-box {
+        padding: 20px;
+      }
+      
+      .about-box h3,
+      .connect-box h3 {
+        font-size: 1.3rem;
+      }
+      
+      /* Remove horizontal margins on small screens */
+      .container {
+        padding-left: 10px;
+        padding-right: 10px;
+      }
+      
+      /* Make destination suggestions dropdown mobile-friendly */
+      #destinationSuggestions .list-group-item {
+        padding: 10px 15px;
+        font-size: 0.9rem;
+      }
+    }
+    
+    /* Extra small devices (phones in portrait, less than 576px) */
+    @media (max-width: 576px) {
+      .hero-header h1 {
+        font-size: 1.5rem;
+      }
+      
+      .hero-header p {
+        font-size: 0.9rem;
+      }
+      
+      .plexo-logo {
+        font-size: 1.1rem;
       }
       
       .main-container {
-        padding: 30px 20px;
-        margin: -30px 15px 30px;
-        border-radius: 20px;
+        padding: 20px 10px;
+        margin: -20px 5px 20px;
       }
       
       .form-section {
-        padding: 25px;
+        padding: 15px 10px;
+      }
+      
+      .form-section h2 {
+        font-size: 1.5rem;
+      }
+      
+      .interest-chip,
+      .companion-chip {
+        font-size: 0.8rem;
+        padding: 8px 12px;
+      }
+      
+      .btn-generate {
+        padding: 10px 20px;
+        font-size: 0.95rem;
+      }
+      
+      .itinerary-card {
+        padding: 15px 10px;
+      }
+      
+      .itinerary-card h3 {
+        font-size: 1.3rem;
+      }
+      
+      .carousel-item img {
+        height: 200px;
       }
     }
 
