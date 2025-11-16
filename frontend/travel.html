@@ -2249,11 +2249,8 @@
             const delay = initialDelay * attempt; // Exponential backoff
             console.log(`⏳ Waiting ${delay}ms before retry...`);
             
-            // Update button text to show retry status
-            const btnText = document.getElementById('btnText');
-            if (btnText) {
-              btnText.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Server starting up... Retry ${attempt}/${maxRetries}`;
-            }
+            // Don't show retry status to user - keep it seamless
+            // The retries happen automatically in the background
             
             await new Promise(resolve => setTimeout(resolve, delay));
           }
@@ -2509,10 +2506,7 @@
           headers['Authorization'] = `Bearer ${token}`;
         }
         
-        // Show initial status
-        btnText.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Connecting to server...';
-        
-        // Make API call to backend with retry logic
+        // Make API call to backend with retry logic (seamless, no status updates during retries)
         const response = await fetchWithRetry(API_URL, {
           method: 'POST',
           headers: headers,
@@ -2526,9 +2520,6 @@
             travelCompanion: travelCompanion
           })
         }, 3, 2000); // 3 retries with 2 second initial delay
-        
-        // Update status
-        btnText.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing your request...';
         
         if (!response.ok) {
           const errorData = await response.json().catch(() => ({ error: 'Server error' }));
